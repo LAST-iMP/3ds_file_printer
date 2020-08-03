@@ -62,12 +62,12 @@ HalfEdge *Face::generateEdge(Vertex *origin, Vertex *target, unordered_map<Verte
 vector<float>& Face::getNormalVector() {
     if (normalVector != nullptr) return (*normalVector);
     this->normalVector = new vector<float>(3);
-    float x1 = (*vertexes)[1]->x - (*vertexes)[0]->x;
-    float y1 = (*vertexes)[1]->y - (*vertexes)[0]->y;
-    float z1 = (*vertexes)[1]->z - (*vertexes)[0]->z;
-    float x2 = (*vertexes)[2]->x - (*vertexes)[0]->x;
-    float y2 = (*vertexes)[2]->y - (*vertexes)[0]->y;
-    float z2 = (*vertexes)[2]->z - (*vertexes)[0]->z;
+    float x1 = (*vertexes)[1]->getX() - (*vertexes)[0]->getX();
+    float y1 = (*vertexes)[1]->getY() - (*vertexes)[0]->getY();
+    float z1 = (*vertexes)[1]->getZ() - (*vertexes)[0]->getZ();
+    float x2 = (*vertexes)[2]->getX() - (*vertexes)[0]->getX();
+    float y2 = (*vertexes)[2]->getY() - (*vertexes)[0]->getY();
+    float z2 = (*vertexes)[2]->getZ() - (*vertexes)[0]->getZ();
 
     float i = y1*z2 - z1*y2;
     float j = z1*x2 - x1*z2;

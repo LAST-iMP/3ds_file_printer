@@ -6,6 +6,10 @@
 #define INC_3DS_PRINTER_RENDER_PARAM_H
 //入射光方向
 #define L {-0.577, -0.577, -0.577}
+//阴影变换矩阵
+#define ShadowMatrix_X {0.53452, -0.80178, -0.26726}
+#define ShadowMatrix_Y {0.53452, 0.80178, -0.26726}
+#define ShadowMatrix_Z {0.53452, 0, 0.53452}
 //视线方向 {-1, 0, 0}
 #define N 100
 //环境光强

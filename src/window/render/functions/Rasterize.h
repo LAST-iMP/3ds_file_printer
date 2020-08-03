@@ -39,11 +39,10 @@ public:
 private:
     RECT* rect;
     RENDER_DATA * data;
+
     void r_Face(BYTE* buffer, Face& f, vector<vector<int>>& distance, float xMin, float xMax, vector<float>& light);
-    vector<float> getLightColor(float dw, float x, float y, float z, vector<float>& normal);
     float getNL(float x, float y, float z, vector<float>& normal);
     float getMatrixMulti(float, float, float, float, float, float);
-    vector<float> mirrorRate(float NL);
     vector<float> diffuse(float NL);
     vector<float> mirror(float NL, float x, float y, float z, vector<float>& normal);
 };

@@ -11,6 +11,6 @@ HalfEdge::~HalfEdge() {
 }
 
 float HalfEdge::getSlope(bool fromSource) {
-    if (fromSource) return (target->z - source->z) / (target->y - source->y);
-    else return (source->z - target->z) / (source->y - target->y);
+    if (fromSource) return (target->getZ() - source->getZ()) / (target->getY() - source->getY());
+    else return (source->getZ() - target->getZ()) / (source->getY() - target->getY());
 }

@@ -1,12 +1,12 @@
 #include "BoundingBox.h"
 
 BoundingBox::BoundingBox(vector<Vertex*>& vertexes) {
-    xMin = min(vertexes[0]->x, min(vertexes[1]->x, vertexes[2]->x));
-    xMax = max(vertexes[0]->x, max(vertexes[1]->x, vertexes[2]->x));
-    yMin = min(vertexes[0]->y, min(vertexes[1]->y, vertexes[2]->y));
-    yMax = max(vertexes[0]->y, max(vertexes[1]->y, vertexes[2]->y));
-    zMin = min(vertexes[0]->z, min(vertexes[1]->z, vertexes[2]->z));
-    zMax = max(vertexes[0]->z, max(vertexes[1]->z, vertexes[2]->z));
+    xMin = min(vertexes[0]->getX(), min(vertexes[1]->getX(), vertexes[2]->getX()));
+    xMax = max(vertexes[0]->getX(), max(vertexes[1]->getX(), vertexes[2]->getX()));
+    yMin = min(vertexes[0]->getY(), min(vertexes[1]->getY(), vertexes[2]->getY()));
+    yMax = max(vertexes[0]->getY(), max(vertexes[1]->getY(), vertexes[2]->getY()));
+    zMin = min(vertexes[0]->getZ(), min(vertexes[1]->getZ(), vertexes[2]->getZ()));
+    zMax = max(vertexes[0]->getZ(), max(vertexes[1]->getZ(), vertexes[2]->getZ()));
 }
 
 BoundingBox::BoundingBox(BoundingBox* boundingBox) {

@@ -31,8 +31,8 @@ void Rasterize::r_Face(BYTE *buffer, Face &f, vector<vector<int>> &distance, flo
     int zMin = f.boundingBox->zMin;
     int zMax = f.boundingBox->zMax;
     //将斜率为0的边或非最低点开始的边移动至3位
-    if (!(v1->getIntZ() != zMin ^ v2->getIntZ() != zMin)) swap(edges, 0, 2);
-    else if (!(v2->getIntZ() != zMin ^ v3->getIntZ() != zMin)) swap(edges, 1, 2);
+    if (!((int)v1->getZ() != zMin ^ (int)v2->getZ() != zMin)) swap(edges, 0, 2);
+    else if (!((int)v2->getZ() != zMin ^ (int)v3->getZ() != zMin)) swap(edges, 1, 2);
     //按照边的左右顺序排序
     ActiveEdge acLeft(edges[0]);
     ActiveEdge acRight(edges[1]);
@@ -46,9 +46,6 @@ void Rasterize::r_Face(BYTE *buffer, Face &f, vector<vector<int>> &distance, flo
         //深度增量
         float tempX = acLeft.x;
         float dx = (acRight.x - acLeft.x) / (acRight.y - acLeft.y);
-        //颜色增量
-//        float colorDepth = 255 * (acLeft.x - xMin) / (xMax - xMin);
-//        float dColor = 255 * dx / (xMax - xMin);
         //画布上的坐标
         auto location = Vertex::translate(acLeft.y, z, *rect);
         //数据数组坐标
@@ -65,14 +62,11 @@ void Rasterize::r_Face(BYTE *buffer, Face &f, vector<vector<int>> &distance, flo
             if (check && distance[location[0]][location[1]] < tempX) {
                 distance[location[0]][location[1]] = tempX;
                 float NL = getNL(tempX, i, z, n);
-//                cout<<NL<<endl;
                 auto Id = diffuse(NL);
                 auto Is = mirror(NL, tempX, i, z, n);
-//                fillColor(buffer, index, colorDepth, colorDepth, 0);
                 fillColor(buffer, index, Id[0] + Is[0] + Iar, Id[1] + Is[1] + Iag, Id[2] + Is[2] + Iab);
             }
             tempX += dx;
-//            colorDepth += dColor;
             n[0] += dn[0];
             n[1] += dn[1];
             n[2] += dn[2];
@@ -83,14 +77,6 @@ void Rasterize::r_Face(BYTE *buffer, Face &f, vector<vector<int>> &distance, flo
         acLeft.next();
         acRight.next();
     }
-}
-vector<float> Rasterize::getLightColor(float dw, float x, float y, float z, vector<float> &normal) {
-    float NL = getNL(x, y, z, normal);
-    vector<float> result = vector<float>(3);
-//    result[0] = Iar + Ipr * NL * dw *;
-//    result[0] = Iag + Ipg * NL * dw *;
-//    result[0] = Iab + Ipb * NL * dw *;
-    return vector<float>();
 }
 
 float Rasterize::getNL(float x, float y, float z, vector<float> &normal) {
@@ -130,7 +116,6 @@ vector<float> Rasterize::mirror(float NL, float x, float y, float z, vector<floa
     return Is;
 }
 
-
 template<typename T>
 void swap(vector<T*>& edges, int a, int b) {
     auto temp = edges[a];
@@ -139,21 +124,20 @@ void swap(vector<T*>& edges, int a, int b) {
 }
 
 void fillColor(BYTE* buffer, int index, int r, int g, int b) {
-//    cout<<(unsigned int)r<<" "<<(unsigned int)g<<" "<<(unsigned int)b<<endl;
     buffer[index + 2] = (r >= 0)? (unsigned char)r : 0;
     buffer[index + 1] = (g >= 0)? (unsigned char)g : 0;
     buffer[index] = (b >= 0)? (unsigned char)b : 0;
 }
 
 ACT_EDGE::ACT_EDGE(HalfEdge *e) {
-    Vertex* vL = (e->getTarget()->z < e->getOrigin()->z)? e->getTarget() : e->getOrigin();
-    Vertex* vH = (e->getTarget()->z < e->getOrigin()->z)? e->getOrigin() : e->getTarget();
-    x = vL->x;
-    y = vL->y;
-    int dz = ((int)vH->z - (int)vL->z);
-    dx = (vH->x - vL->x) / dz;
-    dy = (vH->y - vL->y) / dz;
-    z_max = vH->z;
+    Vertex* vL = (e->getTarget()->getZ() < e->getOrigin()->getZ())? e->getTarget() : e->getOrigin();
+    Vertex* vH = (e->getTarget()->getZ() < e->getOrigin()->getZ())? e->getOrigin() : e->getTarget();
+    x = vL->getX();
+    y = vL->getY();
+    int dz = ((int)vH->getZ() - (int)vL->getZ());
+    dx = (vH->getX() - vL->getX()) / dz;
+    dy = (vH->getY() - vL->getY()) / dz;
+    z_max = vH->getZ();
 
     auto targetNormal = vH->getAveNormal();
     normal = vector<float>(*vL->getAveNormal());

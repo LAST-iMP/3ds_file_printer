@@ -25,3 +25,8 @@ void Vertex::expandAveNormal(vector<float> *n) {
     (*aveNormal)[2] = ((*aveNormal)[2] * faceCount + (*n)[2]) / (faceCount+1);
     faceCount++;
 }
+
+vector<int> Vertex::getLocation() {
+    vector<int> v = {static_cast<int>(x), static_cast<int>(y), static_cast<int>(z)};
+    return v;
+}
