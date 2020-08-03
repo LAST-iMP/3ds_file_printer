@@ -10,6 +10,7 @@ Face::~Face() {
     delete normalVector;
     delete vertexes;
     delete edges;
+    delete boundingBox;
 }
 
 void Face::init(vector<unsigned short>& index, vector<Vertex*>& vertex, unordered_map<Vertex*, unordered_map<Vertex*, HalfEdge*>*>& meshEdges) {
@@ -32,6 +33,12 @@ void Face::init(vector<unsigned short>& index, vector<Vertex*>& vertex, unordere
     (*edges)[2]->setNext((*edges)[0]);
     (*edges)[2]->setPrevious((*edges)[1]);
     (*edges)[2]->setOpposite(generateEdge((*vertexes)[0], (*vertexes)[2], meshEdges));
+
+    boundingBox = new BoundingBox(*vertexes);
+
+    (*vertexes)[0]->expandAveNormal(&getNormalVector());
+    (*vertexes)[1]->expandAveNormal(&getNormalVector());
+    (*vertexes)[2]->expandAveNormal(&getNormalVector());
 }
 
 HalfEdge *Face::generateEdge(Vertex *origin, Vertex *target, unordered_map<Vertex*, unordered_map<Vertex*, HalfEdge*>*>& meshEdges) {
@@ -61,8 +68,13 @@ vector<float>& Face::getNormalVector() {
     float x2 = (*vertexes)[2]->x - (*vertexes)[0]->x;
     float y2 = (*vertexes)[2]->y - (*vertexes)[0]->y;
     float z2 = (*vertexes)[2]->z - (*vertexes)[0]->z;
-    (*normalVector)[0] = y1*z2 - z1*y2;
-    (*normalVector)[1] = z1*x2 - x1*z2;
-    (*normalVector)[2] = x1*y2 - y1*x2;
+
+    float i = y1*z2 - z1*y2;
+    float j = z1*x2 - x1*z2;
+    float k = x1*y2 - y1*x2;
+    float length = sqrt(j * j + i * i + k * k);
+    (*normalVector)[0] = i/length;
+    (*normalVector)[1] = j/length;
+    (*normalVector)[2] = k/length;
     return (*normalVector);
 }

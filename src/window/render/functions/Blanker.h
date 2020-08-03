@@ -11,7 +11,9 @@
 class Blanker {
 public:
     static void blank(RENDER_DATA& data);
-    static bool check(Face* f);
+
+private:
+    static void checkDirection(unordered_set<Face*>* faces);
 };
 
 

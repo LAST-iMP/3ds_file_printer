@@ -22,8 +22,7 @@ private:
     void initFaces(vector<vector<unsigned short>>& face_data);
 
 public:
-    int xMin;
-    int xMax;
+    BoundingBox * boundingBox;
 
     explicit Mesh_Obj(CK_Obj_TriMesh* ref);
     virtual ~Mesh_Obj();

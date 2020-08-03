@@ -5,8 +5,10 @@
 #ifndef INC_3DS_PRINTER_FACE_H
 #define INC_3DS_PRINTER_FACE_H
 
+#include "BoundingBox.h"
 #include "HalfEdge.h"
 #include <unordered_map>
+#include <cmath>
 
 class Face {
 private:
@@ -21,8 +23,11 @@ public:
     Face(vector<unsigned short>& index, vector<Vertex*>& vertex, unordered_map<Vertex*, unordered_map<Vertex*, HalfEdge*>*>& meshEdges);
     virtual ~Face();
 
+    BoundingBox* boundingBox;
+
     vector<float>& getNormalVector();
     vector<HalfEdge*>& getEdges() {return *edges;}
+    vector<Vertex*>& getVertexes() {return *vertexes;}
 };
 
 

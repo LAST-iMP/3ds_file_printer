@@ -1,7 +1,3 @@
-//
-// Created by lenovo on 2020/7/29.
-//
-
 #ifndef INC_3DS_PRINTER_RENDER_DATA_H
 #define INC_3DS_PRINTER_RENDER_DATA_H
 
@@ -12,24 +8,23 @@ using namespace std;
 
 typedef struct DATA {
     unordered_set<Face*>* faces;
-    int xMin;
-    int xMax;
+    BoundingBox* boundingBox;
 
     explicit DATA(Mesh* mesh) {
         int size = 0;
-        for (auto obj : mesh->getMeshes()) size += obj->getFaces().size();
-        xMin = mesh->xMin;
-        xMax = mesh->xMax;
+        for (auto obj : *mesh->meshes) size += obj->getFaces().size();
         faces = new unordered_set<Face*>(size);
-        for (auto obj : mesh->getMeshes()) {
+        for (auto obj : *mesh->meshes) {
             for (auto f : obj->getFaces()) {
                 faces->insert(f);
             }
         }
+        boundingBox = new BoundingBox(mesh->boundingBox);
     }
 
     virtual ~DATA() {
         delete faces;
+        delete boundingBox;
     }
 
     int getSize() {

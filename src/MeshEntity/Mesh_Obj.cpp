@@ -2,23 +2,6 @@
 
 using namespace std;
 
-void Mesh_Obj::initVertex(vector<vector<float>> &vertex_data) {
-    vertexes = new vector<Vertex*>(vertex_data.size());
-    for (int i = 0; i < vertexes->size(); ++i) {
-        (*vertexes)[i] = new Vertex(vertex_data[i]);
-        xMin = (i == 0)? (*vertexes)[i]->getIntX() : min(xMin, (*vertexes)[i]->getIntX());
-        xMax = (i == 0)? (*vertexes)[i]->getIntX() : max(xMax, (*vertexes)[i]->getIntX());
-    }
-}
-
-void Mesh_Obj::initFaces(vector<vector<unsigned short>> &face_data) {
-    faces = new vector<Face*>(face_data.size());
-    edges = new unordered_map<Vertex*, unordered_map<Vertex*, HalfEdge*>*>();
-    for (int i = 0; i < face_data.size(); ++i) {
-        (*faces)[i] = new Face(face_data[i], *vertexes, *edges);
-    }
-}
-
 Mesh_Obj::Mesh_Obj(CK_Obj_TriMesh *ref) {
     auto* vChunk = reinterpret_cast<CK_Tri_Vertex *>((*ref).getFirstSubChunk(TRI_VERTEX));
     auto* fChunk = reinterpret_cast<CK_Tri_Face1 *>((*ref).getFirstSubChunk(TRI_FACE1));
@@ -38,6 +21,24 @@ Mesh_Obj::~Mesh_Obj() {
     delete edges;
     for (Face* f : *faces) delete f;
     delete faces;
+    delete boundingBox;
+}
+
+void Mesh_Obj::initVertex(vector<vector<float>> &vertex_data) {
+    vertexes = new vector<Vertex*>(vertex_data.size());
+    for (int i = 0; i < vertexes->size(); ++i) {
+        (*vertexes)[i] = new Vertex(vertex_data[i]);
+    }
+}
+
+void Mesh_Obj::initFaces(vector<vector<unsigned short>> &face_data) {
+    faces = new vector<Face*>(face_data.size());
+    edges = new unordered_map<Vertex*, unordered_map<Vertex*, HalfEdge*>*>();
+    for (int i = 0; i < face_data.size(); ++i) {
+        (*faces)[i] = new Face(face_data[i], *vertexes, *edges);
+        if (i == 0) boundingBox = new BoundingBox((*faces)[0]->boundingBox);
+        boundingBox->expand((*faces)[i]->boundingBox);
+    }
 }
 
 HalfEdge* Mesh_Obj::findEdge(Vertex *origin, Vertex *target) {

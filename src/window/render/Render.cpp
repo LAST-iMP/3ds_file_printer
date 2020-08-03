@@ -35,6 +35,8 @@ Mesh* Render::transform(CK_Main3DS* m) {
 }
 
 void Render::draw(HWND hwnd) {
+    struct timeval start, end;
+    mingw_gettimeofday(&start, nullptr);
     //定义指向包含绘图信息的结构体变量
     PAINTSTRUCT PtStr;
     //获取窗口大小
@@ -48,6 +50,9 @@ void Render::draw(HWND hwnd) {
     doubleBuffer(hDC, &rect);
     //释放资源
     EndPaint(hwnd, &PtStr);
+
+    mingw_gettimeofday(&end, nullptr);
+    cout<<"spend: "<<(end.tv_sec * 1000000 - start.tv_sec * 1000000 + end.tv_usec - start.tv_usec)<<"us, "<<(end.tv_sec * 1000000 - start.tv_sec * 1000000 + end.tv_usec - start.tv_usec)/1000<<"ms"<<endl<<endl;
 }
 
 void Render::doubleBuffer(HDC hdc,RECT *rect) {
@@ -84,15 +89,17 @@ void Render::doubleBuffer(HDC hdc,RECT *rect) {
 }
 
 void Render::fillBuffer(BYTE* buffer, RECT& rect, int length) {
+    vector<float> light = L;
     memset(buffer, 255, length);
-
     RENDER_DATA data(this->mesh);
-    Cutter::cut(rect, data);
-    Blanker::blank(data);
+    cout<<data.getSize()<<endl;
 
-    struct timeval start, end;
-    mingw_gettimeofday(&start, nullptr);
-    Rasterize::rasterize(buffer, rect, data);
-    mingw_gettimeofday(&end, nullptr);
-    cout<<"spend: "<<(end.tv_sec * 1000000 - start.tv_sec * 1000000 + end.tv_usec - start.tv_usec)<<"us, "<<(end.tv_sec * 1000000 - start.tv_sec * 1000000 + end.tv_usec - start.tv_usec)/1000<<"ms"<<endl<<endl;
+    Cutter::cut(rect, data);
+    cout<<data.getSize()<<endl;
+
+    Blanker::blank(data);
+    cout<<data.getSize()<<endl;
+
+    Rasterize rasterize(&rect, &data);
+    rasterize.rasterize(buffer, light);
 }

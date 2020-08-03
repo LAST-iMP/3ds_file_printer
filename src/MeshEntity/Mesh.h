@@ -11,16 +11,11 @@ using namespace std;
 
 class Mesh {
 public:
-    int xMin;
-    int xMax;
+    BoundingBox* boundingBox;
+    vector<Mesh_Obj*>* meshes;
 
     explicit Mesh(CK_Edit3DS* edit3DS);
     virtual ~Mesh();
-
-    vector<Mesh_Obj*>& getMeshes() {return *meshes;}
-
-private:
-    vector<Mesh_Obj*>* meshes;
 };
 
 

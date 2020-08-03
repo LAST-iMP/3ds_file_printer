@@ -9,39 +9,43 @@
 #include "iostream"
 #include "windows.h"
 #include "../Render_DATA.h"
-
-#define DRAW_EDGE false;
+#include "../Render_Param.h"
 
 using namespace std;
 
 typedef struct ACT_EDGE {
+    //坐标及坐标增量
     float y;
     float x;
     float dy;
     float dx;
+    //最大z值
     float z_max;
-    ACT_EDGE(HalfEdge* e) {
-        Vertex* vL = (e->getTarget()->z < e->getOrigin()->z)? e->getTarget() : e->getOrigin();
-        Vertex* vH = (e->getTarget()->z < e->getOrigin()->z)? e->getOrigin() : e->getTarget();
-        x = vL->x;
-        y = vL->y;
-        dx = (vH->x - vL->x) / ((int)vH->z - (int)vL->z);
-        dy = (vH->y - vL->y) / ((int)vH->z - (int)vL->z);
-        z_max = vH->z;
-    }
+    //法向量及法向量增量
+    vector<float> normal;
+    vector<float> dN;
 
-    void next() {
-        y += dy;
-        x += dx;
-    }
+    explicit ACT_EDGE(HalfEdge* e);
+    void next();
 } ActiveEdge, *HActiveEdge;
 
 class Rasterize {
 public:
-    static void rasterize(BYTE* buffer, RECT& rect, RENDER_DATA& data);
+    explicit Rasterize(RECT* rect, RENDER_DATA * data);
+    virtual ~Rasterize();
+
+    void rasterize(BYTE* buffer, vector<float>& light);
 
 private:
-    static void r_Face(BYTE* buffer, RECT rect, Face& f, vector<vector<int>>& distance, int xMin, int xMax);
+    RECT* rect;
+    RENDER_DATA * data;
+    void r_Face(BYTE* buffer, Face& f, vector<vector<int>>& distance, float xMin, float xMax, vector<float>& light);
+    vector<float> getLightColor(float dw, float x, float y, float z, vector<float>& normal);
+    float getNL(float x, float y, float z, vector<float>& normal);
+    float getMatrixMulti(float, float, float, float, float, float);
+    vector<float> mirrorRate(float NL);
+    vector<float> diffuse(float NL);
+    vector<float> mirror(float NL, float x, float y, float z, vector<float>& normal);
 };
 
 

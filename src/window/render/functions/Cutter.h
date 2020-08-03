@@ -11,6 +11,9 @@
 class Cutter {
 public:
     static void cut(RECT & rect, RENDER_DATA & data);
+
+private:
+    static void checkLocation(unordered_set<Face*>& faces, RECT& rect);
 };
 
 

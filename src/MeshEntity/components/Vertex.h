@@ -12,7 +12,9 @@ public:
     float y;
     float z;
 
+
     Vertex(vector<float>& v);
+    virtual ~Vertex();
 
     vector<int> getLocation() {
         vector<int> v = {static_cast<int>(x), static_cast<int>(y), static_cast<int>(z)};
@@ -27,6 +29,12 @@ public:
     int getIntZ() {return z;}
 
     static vector<int> translate(int x, int y, RECT & rect);
+    vector<float>* getAveNormal() {return aveNormal;}
+    void expandAveNormal(vector<float>* n);
+
+private:
+    vector<float>* aveNormal = nullptr;
+    int faceCount = 0;
 };
 
 

@@ -28,7 +28,7 @@ public:
     HalfEdge* getPrevious() {return previous;}
     HalfEdge* getOpposite() {return opposite;}
     Face* getFace() {return face;}
-    float getSlope();
+    float getSlope(bool fromSource);
 };
 
 

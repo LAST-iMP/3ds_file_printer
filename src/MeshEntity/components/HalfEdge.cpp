@@ -10,8 +10,7 @@ HalfEdge::~HalfEdge() {
 
 }
 
-float HalfEdge::getSlope() {
-    Vertex* from = (source->y <= target->y)? source : target;
-    Vertex* to = (source->y <= target->y)? target : source;
-    return (to->z - from->z) / (to->y - from->y);
+float HalfEdge::getSlope(bool fromSource) {
+    if (fromSource) return (target->z - source->z) / (target->y - source->y);
+    else return (source->z - target->z) / (source->y - target->y);
 }
