@@ -11,7 +11,7 @@ void Blanker::blank(RENDER_DATA &data) {
 void Blanker::checkDirection(unordered_set<Face*> * faces) {
     auto iter = faces->begin();
     while (iter != faces->end()) {
-        if ((*iter)->getNormalVector()[0] < 0) iter = faces->erase(iter);
+        if ((*iter)->getNormalVector().getX() < 0) iter = faces->erase(iter);
         else iter++;
     }
 }

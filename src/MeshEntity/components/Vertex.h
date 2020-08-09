@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "windows.h"
+#include "../../common/Vector3D.h"
 
 using namespace std;
 
@@ -16,8 +17,8 @@ public:
     float getX() const {return x;}
     float getY() const {return y;}
     float getZ() const {return z;}
-    vector<float>* getAveNormal() {return aveNormal;}
-    void expandAveNormal(vector<float>* n);
+    Vector3D* getAveNormal() {return &aveNormal;}
+    void expandAveNormal(Vector3D& n);
 
     static vector<int> translate(int x, int y, RECT & rect);
 
@@ -26,7 +27,7 @@ private:
     float y;
     float z;
 
-    vector<float>* aveNormal = nullptr;
+    Vector3D aveNormal;
     int faceCount = 0;
 };
 

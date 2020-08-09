@@ -18,8 +18,8 @@ public:
     float dy;
     int zMin;
     int zMax;
-    vector<float> normal;
-    vector<float> dN;
+    Vector3D normal;
+    Vector3D dN;
     HalfEdge* edge;
 
     explicit Edge_Node(HalfEdge* e);

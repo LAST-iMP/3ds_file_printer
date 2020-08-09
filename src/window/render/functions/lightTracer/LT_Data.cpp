@@ -1,14 +1,6 @@
 #include "LT_Data.h"
 
-pair<float, pair<vector<float>, Face *>> LT_Data::empty = make_pair(0, make_pair(vector<float>(), nullptr));
-
-float getMatrixMulti(vector<float>& a, vector<float>& b) {
-    return a[0]*b[0] + a[1]*b[1] + a[2]*b[2];
-}
-
-vector<float> getMatrixCross(vector<float>& a, vector<float>& b) {
-    return {a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]};
-}
+pair<float, pair<Vector3D, Face *>> LT_Data::empty = make_pair(0, make_pair(Vector3D(), nullptr));
 
 LT_Data::LT_Data(Mesh *mesh, RECT& rect) {
     xLimit = mesh->boundingBox->xMax - mesh->boundingBox->xMin;
@@ -75,9 +67,9 @@ bool LT_Data::insert(Face *face) {
     return true;
 }
 
-pair<float, pair<vector<float>, Face *>> LT_Data::getFirstCross(vector<float> &start, vector<float> &direction) {
+pair<float, pair<Vector3D, Face *>> LT_Data::getFirstCross(Vector3D &start, Vector3D &direction) {
     if (!checkBox(start, direction)) return empty;
-    pair<float, pair<vector<float>, Face *>> result = empty;
+    pair<float, pair<Vector3D, Face *>> result = empty;
     auto distance = FLT_MAX;
     for (auto sub : *subNodes) {
         auto temp = sub->getFirstCross(start, direction);
@@ -88,7 +80,7 @@ pair<float, pair<vector<float>, Face *>> LT_Data::getFirstCross(vector<float> &s
         }
     }
     for (auto f : *faces) {
-        if (getMatrixMulti(f->getNormalVector(), direction) > 0) continue;
+        if (f->getNormalVector() * direction > 0) continue;
         auto temp = getFaceCross(f, start, direction);
         if (temp.second.second == nullptr) continue;
         if (temp.first < distance) {
@@ -99,39 +91,37 @@ pair<float, pair<vector<float>, Face *>> LT_Data::getFirstCross(vector<float> &s
     return result;
 }
 
-pair<float, pair<vector<float>, Face *>> LT_Data::getFaceCross(Face *face, vector<float> &start, vector<float> &direction) {
+pair<float, pair<Vector3D, Face *>> LT_Data::getFaceCross(Face *face, Vector3D &start, Vector3D &direction) {
     auto vertexes = face->getVertexes();
-    vector<float> E1 = {vertexes[1]->getX() - vertexes[0]->getX(), vertexes[1]->getY() - vertexes[0]->getY(), vertexes[1]->getZ() - vertexes[0]->getZ()};
-    vector<float> E2 = {vertexes[2]->getX() - vertexes[0]->getX(), vertexes[2]->getY() - vertexes[0]->getY(), vertexes[2]->getZ() - vertexes[0]->getZ()};
-    vector<float> P = getMatrixCross(direction, E2);
-    float denominator = getMatrixMulti(P, E1);
-    vector<float> T = {start[0] - vertexes[0]->getX(), start[1] - vertexes[0]->getY(), start[2] - vertexes[0]->getZ()};
+    Vector3D E1 = {vertexes[1]->getX() - vertexes[0]->getX(), vertexes[1]->getY() - vertexes[0]->getY(), vertexes[1]->getZ() - vertexes[0]->getZ()};
+    Vector3D E2 = {vertexes[2]->getX() - vertexes[0]->getX(), vertexes[2]->getY() - vertexes[0]->getY(), vertexes[2]->getZ() - vertexes[0]->getZ()};
+    Vector3D P = direction.cross(E2);
+    float denominator = P * E1;
+    Vector3D T = {start.getX() - vertexes[0]->getX(), start.getY() - vertexes[0]->getY(), start.getZ() - vertexes[0]->getZ()};
     if (denominator < 0) {
         denominator = -denominator;
-        T[0] = -T[0];
-        T[1] = -T[1];
-        T[2] = -T[2];
+        T = -T;
     }
     if (denominator < 0.001f) return empty;
-    vector<float> Q = getMatrixCross(T, E1);
-    float t = getMatrixMulti(Q, E2)/denominator;
+    Vector3D Q = T.cross(E1);
+    float t = Q * E2 / denominator;
     if (t < 0.0001) return empty;
 
-    float u = getMatrixMulti(P, T)/denominator;
-    float v = getMatrixMulti(Q, direction)/denominator;
+    float u = P * T / denominator;
+    float v = Q * direction / denominator;
     if (u < 0 || v < 0 || u + v > 1) return empty;
-    vector<float> cross = {vertexes[0]->getX() + E1[0] * u + E2[0] * v, vertexes[0]->getY() + E1[1] * u + E2[1] * v, vertexes[0]->getZ() + E1[2] * u + E2[2] * v};
+    Vector3D cross = {vertexes[0]->getX() + E1.getX() * u + E2.getX() * v, vertexes[0]->getY() + E1.getY() * u + E2.getY() * v, vertexes[0]->getZ() + E1.getZ() * u + E2.getZ() * v};
     return make_pair(t, make_pair(cross, face));
 }
 
-bool LT_Data::checkBox(vector<float> &start, vector<float> &direction) {
-    if (direction[0] < 0 && start[0] < box->xMin || direction[0] > 0 && start[0] > box->xMax) return false;
-    if (direction[1] < 0 && start[1] < box->yMin || direction[1] > 0 && start[1] > box->yMax) return false;
-    if (direction[2] < 0 && start[2] < box->zMin || direction[2] > 0 && start[2] > box->zMax) return false;
+bool LT_Data::checkBox(Vector3D &start, Vector3D &direction) {
+    if (direction.getX() < 0 && start.getX() < box->xMin || direction.getX() > 0 && start.getX() > box->xMax) return false;
+    if (direction.getY() < 0 && start.getY() < box->yMin || direction.getY() > 0 && start.getY() > box->yMax) return false;
+    if (direction.getZ() < 0 && start.getZ() < box->zMin || direction.getZ() > 0 && start.getZ() > box->zMax) return false;
 
-    auto xRange = getRange(direction[0], start[0], box->xMin, box->xMax);
-    auto yRange = getRange(direction[1], start[1], box->yMin, box->yMax);
-    auto zRange = getRange(direction[2], start[2], box->zMin, box->zMax);
+    auto xRange = getRange(direction.getX(), start.getX(), box->xMin, box->xMax);
+    auto yRange = getRange(direction.getY(), start.getY(), box->yMin, box->yMax);
+    auto zRange = getRange(direction.getZ(), start.getZ(), box->zMin, box->zMax);
     return max(xRange.first, max(yRange.first, zRange.first)) < min(xRange.second, min(yRange.second, zRange.second));
 }
 

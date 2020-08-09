@@ -6,7 +6,6 @@
 #define INC_3DS_PRINTER_RENDER_PARAM_H
 //入射光方向
 #define L_DIR {-0.577, -0.577, -0.577}
-//#define L_DIR {-1.0, 0, 0}
 //阴影变换矩阵
 #define ShadowMatrix_X {0.53452, -0.80178, -0.26726}
 #define ShadowMatrix_Y {0.53452, 0.80178, -0.26726}
@@ -28,9 +27,9 @@
 #define Kdg 0.3f
 #define Kdb 0.2f
 //遮蔽漫反射系数
-#define BKdr Kdr * 0.2
-#define BKdg Kdg * 0.2
-#define BKdb Kdb * 0.2
+#define BKdr Kdr * 0.2f
+#define BKdg Kdg * 0.2f
+#define BKdb Kdb * 0.2f
 //镜面反射系数
 #define Ks 0.3f
 //全局光照最小权值

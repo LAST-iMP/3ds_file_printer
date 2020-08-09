@@ -93,7 +93,7 @@ void Render::doubleBuffer(HDC hdc,RECT *rect) {
 }
 
 void Render::rasterization(BYTE* buffer, RECT& rect, int length) {
-    vector<float> light = L_DIR;
+    Vector3D light = L_DIR;
     memset(buffer, 255, length);
     RENDER_DATA data(mesh);
     LT_Data ltData(mesh, rect);

@@ -15,13 +15,13 @@ using namespace std;
 
 class Z_Buffer {
 public:
-    void doRasterize(RECT* rect, RENDER_DATA * data, BYTE* buffer, vector<float> * light);
+    void doRasterize(RECT* rect, RENDER_DATA * data, BYTE* buffer, Vector3D * light);
 
 private:
     RECT* rect;
     LightFilter * colorFilter;
     vector<vector<int>> distance;
-    vector<float> * light;
+    Vector3D * light;
 
     void r_Face(BYTE* buffer, Face& f);
 };

@@ -11,18 +11,17 @@
 #include <ctime>
 #include <iostream>
 #include "../../Render_Param.h"
+#include "../../../../common/Vector3D.h"
 
 using namespace std;
 
 class LightFilter {
 public:
     void fillColor(BYTE* buffer, int index, int r, int g, int b);
-    vector<float> localLight(vector<float>& normal, vector<float>& light);
+    vector<float> localLight(Vector3D& normal, Vector3D& light);
 
 private:
-    vector<float> mirror(float NL, vector<float> &normal, vector<float>& light);
-
-    float getMatrixMulti(float, float, float, float, float, float);
+    vector<float> mirror(float NL, Vector3D& normal, Vector3D& light);
 };
 
 

@@ -21,12 +21,12 @@ public:
 private:
     LT_Data *data;
 
-    static vector<float> getUnit(float x, float y, float z);
-    vector<float> globalLight(vector<float>& start, vector<float>& direction, float weight, vector<float>& light);
-    static vector<float> getReflectionDirection(vector<float>& normal, vector<float>& direction);
+    static Vector3D getUnit(float x, float y, float z);
+    vector<float> globalLight(Vector3D& start, Vector3D& direction, float weight, Vector3D& light);
+    static Vector3D getReflectionDirection(Vector3D& normal, Vector3D& direction);
 
-    vector<float> localLight(pair<vector<float>, Face*>& point, vector<float>& light);
-    static vector<float> mirror(float NL, vector<float> &normal, vector<float>& light);
+    vector<float> localLight(pair<Vector3D, Face*>& point, Vector3D& light);
+    static vector<float> mirror(float NL, Vector3D& normal, Vector3D& light);
 };
 
 

@@ -17,17 +17,14 @@ Edge_Node::Edge_Node(HalfEdge *e) {
     zMax = vH->getZ();
 
     auto targetNormal = vH->getAveNormal();
-    normal = vector<float>(*vL->getAveNormal());
-    dN = vector<float>(3);
-    dN[0] = ((*targetNormal)[0] - normal[0]) / dz;
-    dN[1] = ((*targetNormal)[1] - normal[1]) / dz;
-    dN[2] = ((*targetNormal)[2] - normal[2]) / dz;
+    normal = Vector3D(*vL->getAveNormal());
+    targetNormal->toUnit();
+    normal.toUnit();
+    dN = (*targetNormal - normal)/dz;
 }
 
 void Edge_Node::next() {
     y += dy;
     x += dx;
-    normal[0] += dN[0];
-    normal[1] += dN[1];
-    normal[2] += dN[2];
+    normal += dN;
 }

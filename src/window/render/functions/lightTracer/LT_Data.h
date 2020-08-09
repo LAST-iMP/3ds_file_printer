@@ -17,7 +17,7 @@ public:
     virtual ~LT_Data();
 
     bool operator<(LT_Data& data);
-    pair<float, pair<vector<float>, Face *>> getFirstCross(vector<float>& start, vector<float>& direction);
+    pair<float, pair<Vector3D, Face *>> getFirstCross(Vector3D& start, Vector3D& direction);
 private:
     float xLimit;
     float yLimit;
@@ -27,12 +27,12 @@ private:
     list<Face*>* faces;
     RECT rect;
 
-    static pair<float, pair<vector<float>, Face *>> empty;
+    static pair<float, pair<Vector3D, Face *>> empty;
 
     bool insert(Face* face);
-    bool checkBox(vector<float>& start, vector<float>& direction);
+    bool checkBox(Vector3D& start, Vector3D& direction);
     static pair<float, float> getRange(float dt, float start, float min, float max);
-    pair<float, pair<vector<float>, Face *>> getFaceCross(Face* face, vector<float>& start, vector<float>& direction);
+    pair<float, pair<Vector3D, Face *>> getFaceCross(Face* face, Vector3D& start, Vector3D& direction);
 };
 
 

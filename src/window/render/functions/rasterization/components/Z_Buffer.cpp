@@ -7,7 +7,7 @@ static void swap(vector<T*>& edges, int a, int b) {
     edges[b] = temp;
 }
 
-void Z_Buffer::doRasterize(RECT *rect, RENDER_DATA *data, BYTE *buffer, vector<float> * light) {
+void Z_Buffer::doRasterize(RECT *rect, RENDER_DATA *data, BYTE *buffer, Vector3D * light) {
     this->rect = rect;
     this->light = light;
 
@@ -47,11 +47,9 @@ void Z_Buffer::r_Face(BYTE *buffer, Face &f) {
         //数据数组坐标
         int index = (location[0] + location[1] * rect->right) * 3;
         //法向量及增量
-        vector<float> n = vector<float>(acLeft.normal);
-        vector<float> dn = vector<float>(acRight.normal);
-        dn[0] = (dn[0] - n[0]) / (acRight.y - acLeft.y);
-        dn[1] = (dn[1] - n[1]) / (acRight.y - acLeft.y);
-        dn[2] = (dn[2] - n[2]) / (acRight.y - acLeft.y);
+        Vector3D n = Vector3D(acLeft.normal);
+        Vector3D dn = Vector3D(acRight.normal);
+        dn = (dn - n) / (acRight.y - acLeft.y);
         for (int i = acLeft.y; i <= acRight.y; ++i, location[0]++, index += 3) {
             //检查越界
             bool check = !(location[0] < 0 || location[1] < 0 || location[0] >= rect->right || location[1] >= rect->bottom);
@@ -61,9 +59,7 @@ void Z_Buffer::r_Face(BYTE *buffer, Face &f) {
                 colorFilter->fillColor(buffer, index, localLight[0], localLight[1], localLight[2]);
             }
             tempX += dx;
-            n[0] += dn[0];
-            n[1] += dn[1];
-            n[2] += dn[2];
+            n += dn;
         }
         if (z == zMax || z == zMin);
         else if ((int)acLeft.zMax == z) acLeft = Edge_Node(edges[2]);

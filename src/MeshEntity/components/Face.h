@@ -14,7 +14,7 @@ class Face {
 private:
     vector<Vertex*>* vertexes;
     vector<HalfEdge*>* edges;
-    vector<float>* normalVector = nullptr;
+    Vector3D* normalVector = nullptr;
 
     HalfEdge* generateEdge(Vertex* origin, Vertex* target, unordered_map<Vertex*, unordered_map<Vertex*, HalfEdge*>*>& meshEdges);
     void init(vector<unsigned short>& index, vector<Vertex*>& vertex, unordered_map<Vertex*, unordered_map<Vertex*, HalfEdge*>*>& meshEdges);
@@ -25,7 +25,7 @@ public:
 
     BoundingBox* boundingBox;
 
-    vector<float>& getNormalVector();
+    Vector3D& getNormalVector();
     vector<HalfEdge*>& getEdges() {return *edges;}
     vector<Vertex*>& getVertexes() {return *vertexes;}
     bool operator < (Face& f) const {

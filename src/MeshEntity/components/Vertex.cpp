@@ -4,10 +4,7 @@ Vertex::Vertex(vector<float>& v) {
     x = v[0];
     y = v[1];
     z = v[2];
-}
-
-Vertex::~Vertex() {
-    delete aveNormal;
+    aveNormal = Vector3D();
 }
 
 vector<int> Vertex::translate(int x, int y, RECT &rect) {
@@ -17,16 +14,18 @@ vector<int> Vertex::translate(int x, int y, RECT &rect) {
     return result;
 }
 
-void Vertex::expandAveNormal(vector<float> *n) {
-    if (aveNormal == nullptr)
-        aveNormal = new vector<float>(*n);
-    (*aveNormal)[0] = ((*aveNormal)[0] * faceCount + (*n)[0]) / (faceCount+1);
-    (*aveNormal)[1] = ((*aveNormal)[1] * faceCount + (*n)[1]) / (faceCount+1);
-    (*aveNormal)[2] = ((*aveNormal)[2] * faceCount + (*n)[2]) / (faceCount+1);
+void Vertex::expandAveNormal(Vector3D& n) {
+    if (!aveNormal.isSet())
+        aveNormal = n;
+    aveNormal = aveNormal * faceCount + n / (faceCount + 1);
     faceCount++;
 }
 
 vector<int> Vertex::getLocation() {
     vector<int> v = {static_cast<int>(x), static_cast<int>(y), static_cast<int>(z)};
     return v;
+}
+
+Vertex::~Vertex() {
+
 }
