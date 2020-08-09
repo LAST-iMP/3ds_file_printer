@@ -6,7 +6,7 @@
 #define INC_3DS_PRINTER_CUTTER_H
 
 #include "windows.h"
-#include "../Render_DATA.h"
+#include "Rasterization_DATA.h"
 
 class Cutter {
 public:

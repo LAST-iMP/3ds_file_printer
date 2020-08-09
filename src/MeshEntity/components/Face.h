@@ -28,6 +28,9 @@ public:
     vector<float>& getNormalVector();
     vector<HalfEdge*>& getEdges() {return *edges;}
     vector<Vertex*>& getVertexes() {return *vertexes;}
+    bool operator < (Face& f) const {
+        return this->boundingBox->yMin > f.boundingBox->yMin;
+    }
 };
 
 

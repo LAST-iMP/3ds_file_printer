@@ -28,3 +28,12 @@ void BoundingBox::expand(BoundingBox *boundingBox) {
     zMin = min(zMin, boundingBox->zMin);
     zMax = max(zMax, boundingBox->zMax);
 }
+
+BoundingBox::BoundingBox(float xMin, float xMax, float yMin, float yMax, float zMin, float zMax) {
+    this->xMax = xMax;
+    this->xMin = xMin;
+    this->yMax = yMax;
+    this->yMin = yMin;
+    this->zMax = zMax;
+    this->zMin = zMin;
+}

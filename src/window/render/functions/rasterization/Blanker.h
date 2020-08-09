@@ -6,7 +6,7 @@
 #define INC_3DS_PRINTER_BLANKER_H
 
 #include "windows.h"
-#include "../Render_DATA.h"
+#include "Rasterization_DATA.h"
 
 class Blanker {
 public:

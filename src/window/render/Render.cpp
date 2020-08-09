@@ -52,7 +52,8 @@ void Render::draw(HWND hwnd) {
     EndPaint(hwnd, &PtStr);
 
     mingw_gettimeofday(&end, nullptr);
-    cout<<"spend: "<<(end.tv_sec * 1000000 - start.tv_sec * 1000000 + end.tv_usec - start.tv_usec)<<"us, "<<(end.tv_sec * 1000000 - start.tv_sec * 1000000 + end.tv_usec - start.tv_usec)/1000<<"ms"<<endl<<endl;
+    long t = (end.tv_sec * 1000000 - start.tv_sec * 1000000 + end.tv_usec - start.tv_usec);
+    cout<<"spend: "<<t<<"us, "<<t/1000<<"ms"<<endl<<endl;
 }
 
 void Render::doubleBuffer(HDC hdc,RECT *rect) {
@@ -79,8 +80,11 @@ void Render::doubleBuffer(HDC hdc,RECT *rect) {
     //将位图选进内存dc中
     auto g_hOldBmp = (HBITMAP)SelectObject(g_hMemDC, g_hBmp);
     //绘制
-    fillBuffer(g_pBits, *rect, size);
+    rasterization(g_pBits, *rect, size);
     BitBlt(hdc, 0, 0, iWidth, iHeight, g_hMemDC, 0, 0, SRCCOPY);
+//    lightTracer(g_pBits, *rect);
+    lightTracer(hdc, *rect);
+//    BitBlt(hdc, 0, 0, iWidth, iHeight, g_hMemDC, 0, 0, SRCCOPY);
     //释放资源
     SelectObject(g_hMemDC, g_hOldBmp);
     DeleteObject(g_hBmp);
@@ -88,18 +92,32 @@ void Render::doubleBuffer(HDC hdc,RECT *rect) {
     DeleteDC(g_hMemDC);
 }
 
-void Render::fillBuffer(BYTE* buffer, RECT& rect, int length) {
-    vector<float> light = L;
+void Render::rasterization(BYTE* buffer, RECT& rect, int length) {
+    vector<float> light = L_DIR;
     memset(buffer, 255, length);
-    RENDER_DATA data(this->mesh);
-    cout<<data.getSize()<<endl;
-
-    Cutter::cut(rect, data);
-    cout<<data.getSize()<<endl;
+    RENDER_DATA data(mesh);
+    LT_Data ltData(mesh, rect);
 
     Blanker::blank(data);
-    cout<<data.getSize()<<endl;
+    cout<<"data size: "<<data.getSize()<<endl;
 
-    Rasterize rasterize(&rect, &data);
-    rasterize.rasterize(buffer, light);
+    Cutter::cut(rect, data);
+    cout<<"data size: "<<data.getSize()<<endl;
+
+    Z_Buffer zBuffer;
+    zBuffer.doRasterize(&rect, &data, buffer, &light);
+}
+
+void Render::lightTracer(BYTE *buffer, RECT &rect) {
+    vector<float> light = L_DIR;
+    LT_Data data(mesh, rect);
+    LightTracer tracer{};
+    tracer.trace(&rect, &data, buffer, &light);
+}
+
+void Render::lightTracer(HDC& hdc, RECT &rect) {
+    vector<float> light = L_DIR;
+    LT_Data data(mesh, rect);
+    LightTracer tracer{};
+    tracer.trace(&rect, &data, hdc, &light);
 }

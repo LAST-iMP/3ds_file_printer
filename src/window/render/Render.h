@@ -5,15 +5,16 @@
 #ifndef INC_3DS_PRINTER_RENDER_H
 #define INC_3DS_PRINTER_RENDER_H
 
-#include <iostream>
 #include <string>
 #include <Windows.h>
-#include "Render_DATA.h"
+#include "functions/rasterization/Rasterization_DATA.h"
+#include "functions/lightTracer/LT_Data.h"
 #include "../WindowInfo.h"
 #include "../../3dsEntity/Chunks.h"
-#include "functions/Blanker.h"
-#include "functions/Cutter.h"
-#include "functions/Rasterize.h"
+#include "functions/rasterization/Blanker.h"
+#include "functions/rasterization/Cutter.h"
+#include "functions/rasterization/components/Z_Buffer.h"
+#include "functions/lightTracer/LightTracer.h"
 
 using namespace std;
 
@@ -32,7 +33,9 @@ private:
     static Mesh* transform(CK_Main3DS* m);
 
     void doubleBuffer(HDC hdc,RECT *rect);
-    void fillBuffer(BYTE* buffer, RECT& rect, int length);
+    void rasterization(BYTE* buffer, RECT& rect, int length);
+    void lightTracer(BYTE* buffer, RECT& rect);
+    void lightTracer(HDC& hdc, RECT &rect);
 };
 
 

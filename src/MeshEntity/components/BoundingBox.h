@@ -10,6 +10,7 @@ class BoundingBox {
 public:
     float xMin, xMax, yMin, yMax, zMin, zMax;
 
+    BoundingBox(float xMin, float xMax, float yMin, float yMax, float zMin, float zMax);
     BoundingBox(BoundingBox* boundingBox);
     explicit BoundingBox(vector<Vertex*>& vertexes);
     virtual ~BoundingBox();

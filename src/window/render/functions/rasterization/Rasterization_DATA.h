@@ -1,12 +1,14 @@
-#ifndef INC_3DS_PRINTER_RENDER_DATA_H
-#define INC_3DS_PRINTER_RENDER_DATA_H
+#ifndef INC_3DS_PRINTER_RASTERIZATION_DATA_H
+#define INC_3DS_PRINTER_RASTERIZATION_DATA_H
 
 #include <unordered_set>
-#include "../../MeshEntity/Mesh.h"
+#include <queue>
+#include "../../../../MeshEntity/Mesh.h"
 
 using namespace std;
 
 typedef struct DATA {
+    priority_queue<Face*, vector<Face*>, less<Face*>>* fk;
     unordered_set<Face*>* faces;
     BoundingBox* boundingBox;
 
@@ -32,4 +34,4 @@ typedef struct DATA {
     }
 } RENDER_DATA, *H_RENDER_DATA;
 
-#endif //INC_3DS_PRINTER_RENDER_DATA_H
+#endif //INC_3DS_PRINTER_RASTERIZATION_DATA_H
