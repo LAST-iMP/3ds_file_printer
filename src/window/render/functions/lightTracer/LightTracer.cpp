@@ -6,6 +6,10 @@ void fillColor(BYTE* buffer, int index, vector<float>& rgb) {
     buffer[index] = (unsigned char)max(0, min(255, (int)rgb[2]));
 }
 
+void fillColor(HDC& hdc, int y, int z, RECT& rect, vector<float>& rgb) {
+    SetPixel(hdc, y, rect.bottom-z, RGB((unsigned char)max(0, min(255, (int)rgb[0])), (unsigned char)max(0, min(255, (int)rgb[1])), (unsigned char)max(0, min(255, (int)rgb[2]))));
+}
+
 void LightTracer::trace(RECT *rect, LT_Data *data, BYTE *buffer, vector<float> *light) {
     this->data = data;
     Vector3D eye = EYE_POINT;
@@ -31,7 +35,7 @@ void LightTracer::trace(RECT *rect, LT_Data *data, HDC &hdc, vector<float> *ligh
         for (int j = 0; j < rect->right; ++j, index += 3) {
             auto direction = getUnit(-eye.getX(), j - offsetY - eye.getY(), i - offsetZ - eye.getZ());
             auto color = globalLight(eye, direction, 1, lightDir);
-            SetPixel(hdc, j, rect->bottom-i, RGB((unsigned char)max(0, min(255, (int)color[0])), (unsigned char)max(0, min(255, (int)color[1])), (unsigned char)max(0, min(255, (int)color[2]))));
+            fillColor(hdc, j, i, *rect, color);
         }
     }
 }
@@ -43,11 +47,11 @@ Vector3D LightTracer::getUnit(float x, float y, float z) {
 
 vector<float> LightTracer::globalLight(Vector3D& start, Vector3D& direction, float weight, Vector3D& light) {
     if (weight < MinWeight) return vector<float>({0, 0, 0});
-    auto crossPoint = data->getFirstCross(start, direction);
+    auto crossPoint = data->getFirstCross(make_pair(start, (Face*)nullptr), direction);
     //若没有交点
     if (crossPoint.second.second == nullptr) return vector<float>({0, 0, 0});
     //计算局部光照
-    auto local = localLight(crossPoint.second, light);
+    auto local = localLight(crossPoint, light);
     //计算反射方向
     auto newDirection = getReflectionDirection(crossPoint.second.second->getNormalVector(), direction);
     //计算反射光强
@@ -60,11 +64,11 @@ Vector3D LightTracer::getReflectionDirection(Vector3D& normal, Vector3D& directi
     return direction - normal * (2 * ND);
 }
 
-vector<float> LightTracer::localLight(pair<Vector3D, Face*>& point, Vector3D& light) {
+vector<float> LightTracer::localLight(pair<pair<float, Vector3D>, pair<Vector3D, Face *>>& point, Vector3D& light) {
     auto direction = -light;
-    auto crossPoint = data->getFirstCross(point.first, direction);
+    auto crossPoint = data->getFirstCross(point.second, direction);
     //若有交点
-    auto normal = point.second->getNormalVector();
+    auto normal = point.first.second;
     float NL = normal * direction;
     auto Id = vector<float>({NL * Ipr, NL * Ipg, NL * Ipb});
     if (crossPoint.second.second != nullptr || NL < 0)

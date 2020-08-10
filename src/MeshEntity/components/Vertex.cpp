@@ -17,13 +17,8 @@ vector<int> Vertex::translate(int x, int y, RECT &rect) {
 void Vertex::expandAveNormal(Vector3D& n) {
     if (!aveNormal.isSet())
         aveNormal = n;
-    aveNormal = aveNormal * faceCount + n / (faceCount + 1);
+    aveNormal = aveNormal * faceCount + n / (float)(faceCount + 1);
     faceCount++;
-}
-
-vector<int> Vertex::getLocation() {
-    vector<int> v = {static_cast<int>(x), static_cast<int>(y), static_cast<int>(z)};
-    return v;
 }
 
 Vertex::~Vertex() {

@@ -1,6 +1,7 @@
 #include "LT_Data.h"
 
-pair<float, pair<Vector3D, Face *>> LT_Data::empty = make_pair(0, make_pair(Vector3D(), nullptr));
+//距离，法向量，交点坐标，面引用
+pair<pair<float, Vector3D>, pair<Vector3D, Face *>> LT_Data::empty = make_pair(make_pair(0, Vector3D()), make_pair(Vector3D(), nullptr));
 
 LT_Data::LT_Data(Mesh *mesh, RECT& rect) {
     xLimit = mesh->boundingBox->xMax - mesh->boundingBox->xMin;
@@ -67,15 +68,16 @@ bool LT_Data::insert(Face *face) {
     return true;
 }
 
-pair<float, pair<Vector3D, Face *>> LT_Data::getFirstCross(Vector3D &start, Vector3D &direction) {
-    if (!checkBox(start, direction)) return empty;
-    pair<float, pair<Vector3D, Face *>> result = empty;
+pair<pair<float, Vector3D>, pair<Vector3D, Face *>> LT_Data::getFirstCross(
+        pair<Vector3D, __decay_and_strip<Face *>::__type> start, Vector3D &direction) {
+    if (!checkBox(start.first, direction)) return empty;
+    pair<pair<float, Vector3D>, pair<Vector3D, Face *>> result = empty;
     auto distance = FLT_MAX;
     for (auto sub : *subNodes) {
         auto temp = sub->getFirstCross(start, direction);
         if (temp.second.second == nullptr) continue;
-        if (temp.first < distance) {
-            distance = temp.first;
+        if (temp.first.first < distance) {
+            distance = temp.first.first;
             result = temp;
         }
     }
@@ -83,35 +85,38 @@ pair<float, pair<Vector3D, Face *>> LT_Data::getFirstCross(Vector3D &start, Vect
         if (f->getNormalVector() * direction > 0) continue;
         auto temp = getFaceCross(f, start, direction);
         if (temp.second.second == nullptr) continue;
-        if (temp.first < distance) {
-            distance = temp.first;
+        if (temp.first.first < distance) {
+            distance = temp.first.first;
             result = temp;
         }
     }
     return result;
 }
 
-pair<float, pair<Vector3D, Face *>> LT_Data::getFaceCross(Face *face, Vector3D &start, Vector3D &direction) {
+pair<pair<float, Vector3D>, pair<Vector3D, Face *>> LT_Data::getFaceCross(Face *face, pair<Vector3D, Face *> &start, Vector3D &direction) {
     auto vertexes = face->getVertexes();
     Vector3D E1 = {vertexes[1]->getX() - vertexes[0]->getX(), vertexes[1]->getY() - vertexes[0]->getY(), vertexes[1]->getZ() - vertexes[0]->getZ()};
     Vector3D E2 = {vertexes[2]->getX() - vertexes[0]->getX(), vertexes[2]->getY() - vertexes[0]->getY(), vertexes[2]->getZ() - vertexes[0]->getZ()};
     Vector3D P = direction.cross(E2);
     float denominator = P * E1;
-    Vector3D T = {start.getX() - vertexes[0]->getX(), start.getY() - vertexes[0]->getY(), start.getZ() - vertexes[0]->getZ()};
-    if (denominator < 0) {
+    auto startPoint = start.first;
+    Vector3D T = {startPoint.getX() - vertexes[0]->getX(), startPoint.getY() - vertexes[0]->getY(), startPoint.getZ() - vertexes[0]->getZ()};
+    if (denominator < 0.00001f) {
         denominator = -denominator;
         T = -T;
     }
-    if (denominator < 0.001f) return empty;
+    if (denominator < 0.00001f) return empty;
     Vector3D Q = T.cross(E1);
     float t = Q * E2 / denominator;
-    if (t < 0.0001) return empty;
+    if (t < 0.0001f && !(face == start.second && abs(t) < 0.01)) return empty;
 
     float u = P * T / denominator;
     float v = Q * direction / denominator;
     if (u < 0 || v < 0 || u + v > 1) return empty;
     Vector3D cross = {vertexes[0]->getX() + E1.getX() * u + E2.getX() * v, vertexes[0]->getY() + E1.getY() * u + E2.getY() * v, vertexes[0]->getZ() + E1.getZ() * u + E2.getZ() * v};
-    return make_pair(t, make_pair(cross, face));
+    Vector3D normal = *vertexes[0]->getAveNormal() + (*vertexes[1]->getAveNormal() - *vertexes[0]->getAveNormal()) * u + (*vertexes[2]->getAveNormal() - *vertexes[0]->getAveNormal()) * v;
+    normal.toUnit();
+    return make_pair(make_pair(t, normal), make_pair(cross, face));
 }
 
 bool LT_Data::checkBox(Vector3D &start, Vector3D &direction) {

@@ -25,7 +25,7 @@ private:
     vector<float> globalLight(Vector3D& start, Vector3D& direction, float weight, Vector3D& light);
     static Vector3D getReflectionDirection(Vector3D& normal, Vector3D& direction);
 
-    vector<float> localLight(pair<Vector3D, Face*>& point, Vector3D& light);
+    vector<float> localLight(pair<pair<float, Vector3D>, pair<Vector3D, Face *>>& point, Vector3D& light);
     static vector<float> mirror(float NL, Vector3D& normal, Vector3D& light);
 };
 
